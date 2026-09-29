@@ -1,3 +1,15 @@
 # .gitignore
 
+# secrets
 .env
+
+# virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# editor / OS
+.vscode/
+.DS_Store
