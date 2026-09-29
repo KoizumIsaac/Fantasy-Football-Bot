@@ -9,6 +9,12 @@ def _bench(lineup):
 def _injured(lineup):
     return [player for player in lineup if player.slot_position == "IR"]
 
+def _margin(result):
+    if result is None:
+        return None
+    margin, winner, loser = result
+    return {"margin": margin, "winner": winner.team_name, "loser": loser.team_name}
+
 def top_scorer(box_scores):
     """Highest-scoring starter across the whole league this week."""
     best = None
@@ -51,25 +57,33 @@ def bench_points_missed(box_scores):
                     missed.append((benched.points - worst.points, team, benched, worst))
     return sorted(missed, key=lambda r: r[0], reverse=True)
 
-def build_recap(box_scores, week):
-    lines = [f"Week {week} recap", ""]
-
-    top_score = top_scorer(box_scores)
-    if top_score:
-        player, team = top_score
-        lines.append(f"Top scorer: {player.name} ({player.points:.1f}) for {team.team_name}")
-
+def compute_recap(box_scores, week):
+    ts = top_scorer(box_scores)
     blowout, closest = blowout_and_closest(box_scores)
-    if blowout:
-        lines.append(f"Biggest blowout: {blowout[1].team_name} beat {blowout[2].team_name} by {blowout[0]:.1f}")
-        lines.append(f"Closest game: {closest[1].team_name} edged {closest[2].team_name} by {closest[0]:.1f}")
-
     missed = bench_points_missed(box_scores)
-    if missed:
-        gap, team, bencher, starter = missed[0]
-        lines.append(
-            f"Worst lineup call: {team.team_name} benched {bencher.name} "
-            f"({bencher.points:.1f}) over {starter.name} ({starter.points:.1f})"
-        )
 
-    return "\n".join(lines)
+    worst_bench = None
+    if missed:
+        gap, team, bench_p, starter_p = missed[0]
+        worst_bench = {
+            "team": team.team_name,
+            "benched": bench_p.name,
+            "benched_points": bench_p.points,
+            "started": starter_p.name,
+            "started_points": starter_p.points,
+        }
+
+    return {
+        "week": week,
+        "top_scorer": (
+            {"player": ts[0].name, "points": ts[0].points, "team": ts[1].team_name}
+            if ts else None
+        ),
+        "blowout": _margin(blowout),
+        "closest": _margin(closest),
+        "worst_bench": worst_bench,
+        "scoreboard": [
+            (m.home_team.team_name, m.home_score, m.away_team.team_name, m.away_score)
+            for m in box_scores
+        ],
+    }
