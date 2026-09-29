@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
 from espn_api.football import League
-from src.recap import build_recap
-from src.discord import post_to_discord
+from src.recap import compute_recap
+from src.formatting import build_embed
+from src.discord import post_embed
 
 load_dotenv()
 
@@ -15,6 +16,6 @@ league = League(
 
 week = league.current_week # last completed week
 
-recap = build_recap(league.box_scores(week), week)
-print(recap)
-post_to_discord(recap)
+recap = compute_recap(league.box_scores(week), week)
+print(recap)  # handy for debugging
+post_embed(build_embed(recap))
