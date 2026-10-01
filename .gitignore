@@ -13,3 +13,6 @@ __pycache__/
 # editor / OS
 .vscode/
 .DS_Store
+
+# backing
+injury_state.json
