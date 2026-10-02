@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from espn_api.football import League
 from src.recap import compute_recap
 from src.formatting import build_embed
-from src.discord import post_embed
+from src.discord import post_embeds
 
 load_dotenv()
 
@@ -14,8 +14,8 @@ league = League(
     swid=os.environ["ESPN_SWID"],
 )
 
-week = league.current_week # last completed week
+week = league.current_week - 1 # last completed week
 
 recap = compute_recap(league.box_scores(week), week)
 print(recap)  # handy for debugging
-post_embed(build_embed(recap))
+post_embeds([build_embed(recap)])
