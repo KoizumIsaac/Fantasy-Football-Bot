@@ -37,7 +37,7 @@ def build_embed(recap):
     w = recap["worst_bench"]
     if w:
         fields.append({
-            "name": "🪑 Worst lineup call",
+            "name": "Worst lineup call",
             "value": (
                 f"{w['team']} benched {w['benched']} ({w['benched_points']:.1f}) "
                 f"over {w['started']} ({w['started_points']:.1f})"
@@ -47,7 +47,7 @@ def build_embed(recap):
 
     if recap["scoreboard"]:
         fields.append({
-            "name": "📋 Scoreboard",
+            "name": "Scoreboard",
             "value": _scoreboard_block(recap["scoreboard"])[:1024],
             "inline": False,
         })
